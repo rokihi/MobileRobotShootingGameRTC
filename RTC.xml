@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rtc:RtcProfile rtc:version="0.2" rtc:id="RTC:ota:Game:MobileRobotShootingGame:1.0.0" xmlns:rtc="http://www.openrtp.org/namespaces/rtc" xmlns:rtcExt="http://www.openrtp.org/namespaces/rtc_ext" xmlns:rtcDoc="http://www.openrtp.org/namespaces/rtc_doc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <rtc:BasicInfo xsi:type="rtcExt:basic_info_ext" rtcExt:saveProject="MobileRobotShootingGame" rtc:updateDate="2017-12-05T16:09:19+09:00" rtc:creationDate="2017-12-05T16:09:19+09:00" rtc:version="1.0.0" rtc:vendor="ota" rtc:maxInstances="1" rtc:executionType="PeriodicExecutionContext" rtc:executionRate="1000.0" rtc:description="Shooting game system with mobile robot oriented mixed reality" rtc:category="Game" rtc:componentKind="DataFlowComponent" rtc:activityType="PERIODIC" rtc:componentType="STATIC" rtc:name="MobileRobotShootingGame">
+        <rtcExt:VersionUpLogs></rtcExt:VersionUpLogs>
+    </rtc:BasicInfo>
+    <rtc:Actions>
+        <rtc:OnInitialize xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
+        <rtc:OnFinalize xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnStartup xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnShutdown xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnActivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
+        <rtc:OnDeactivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
+        <rtc:OnAborting xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnError xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnReset xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnExecute xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
+        <rtc:OnStateUpdate xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnRateChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnAction xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+        <rtc:OnModeChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
+    </rtc:Actions>
+    <rtc:ConfigurationSet>
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="hit_thresh_distance" rtc:unit="mm" rtc:defaultValue="1000" rtc:type="int" rtc:name="hit_thresh_distance">
+            <rtcExt:Properties rtcExt:value="slider.10" rtcExt:name="__widget__"/>
+        </rtc:Configuration>
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="hit_thresh_angle" rtc:unit="deg" rtc:defaultValue="10" rtc:type="int" rtc:name="hit_thresh_angle">
+            <rtcExt:Properties rtcExt:value="slider.1" rtcExt:name="__widget__"/>
+        </rtc:Configuration>
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="3" rtc:type="int" rtc:name="hitpoint">
+            <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
+        </rtc:Configuration>
+    </rtc:ConfigurationSet>
+    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="joystick_button" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedBooleanSeq" rtc:name="joystick_button" rtc:portType="DataInPort"/>
+    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="player_pose" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedPose2D" rtc:name="player_pose" rtc:portType="DataInPort"/>
+    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="enemy_pose" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedPose2D" rtc:name="enemy_pose" rtc:portType="DataInPort"/>
+    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="joystick_button_enemy" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedBooleanSeq" rtc:name="joystick_button_enemy" rtc:portType="DataInPort"/>
+    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="RIGHT" rtcExt:variableName="game_state" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedStringSeq" rtc:name="game_state" rtc:portType="DataOutPort"/>
+    <rtc:Language xsi:type="rtcExt:language_ext" rtc:kind="Python"/>
+</rtc:RtcProfile>
