@@ -102,12 +102,32 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
         """
         self._enemy_buttonIn = OpenRTM_aist.InPort(
             "enemy_button", self._d_joystick_button_enemy)
-        game_state_arg = [None] * ((len(RTC._d_TimedStringSeq) - 4) / 2)
-        self._d_game_state = RTC.TimedStringSeq(RTC.Time(0, 0), [])
-        """
-        """
-        self._game_stateOut = OpenRTM_aist.OutPort(
-            "game_state", self._d_game_state)
+        # game_state_arg = [None] * ((len(RTC._d_TimedStringSeq) - 4) / 2)
+        # self._d_game_state = RTC.TimedStringSeq(RTC.Time(0, 0), [])
+        # """
+        # """
+        # self._game_stateOut = OpenRTM_aist.OutPort(
+        #     "game_state", self._d_game_state)
+
+        self._d_winlabel = RTC.TimedLong(RTC.Time(0, 0), 0)
+        self._winlabelOut = OpenRTM_aist.OutPort(
+            "winlabel", self._d_winlabel)
+
+        self._d_player_shoot = RTC.TimedLong(RTC.Time(0, 0), 0)
+        self._player_shootOut = OpenRTM_aist.OutPort(
+            "player_shoot", self._d_player_shoot)
+
+        self._d_player_damage = RTC.TimedLong(RTC.Time(0, 0), 0)
+        self._player_damageOut = OpenRTM_aist.OutPort(
+            "player_damage", self._d_player_damage)
+
+        self._d_enemy_shoot = RTC.TimedLong(RTC.Time(0, 0), 0)
+        self._enemy_shootOut = OpenRTM_aist.OutPort(
+            "enemy_shoot", self._d_enemy_shoot)
+
+        self._d_enemy_damage = RTC.TimedLong(RTC.Time(0, 0), 0)
+        self._enemy_damageOut = OpenRTM_aist.OutPort(
+            "enemy_damage", self._d_enemy_damage)
 
         # initialize of configuration-data.
         # <rtc-template block="init_conf_param">
@@ -164,7 +184,12 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
         self.addInPort("enemy_button", self._enemy_buttonIn)
 
         # Set OutPort buffers
-        self.addOutPort("game_state", self._game_stateOut)
+        # self.addOutPort("game_state", self._game_stateOut)
+        self.addOutPort("winlabel", self._winlabelOut)
+        self.addOutPort("player_shoot", self._player_shootOut)
+        self.addOutPort("player_damage", self._player_damageOut)
+        self.addOutPort("enemy_shoot", self._enemy_shootOut)
+        self.addOutPort("enemy_damage", self._enemy_damageOut)
 
         # Set service provider to Ports
 
@@ -225,20 +250,13 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
         #
         #
     def onActivated(self, ec_id):
-
-        self._d_game_state.data = ["win or loose",
-                                   "player's action", "player's status",
-                                   "enemy's action", "enemy's status"]
-        print self._d_game_state.data
-
-        self._d_player_pose.data = RTC.Pose2D(
-            RTC.Point2D(0.0, 0.0), 3.14 / 4)
-        self._d_enemy_pose.data = RTC.Pose2D(
-            RTC.Point2D(100.0, 100.0), 0.0)
-        print "player pose: ", self._d_player_pose.data
-        print "enemy pose:  ", self._d_enemy_pose.data
-
+        self._d_winlabel.data = 0
         self.hit_count = 0
+        self.damage_count = 0
+        self._d_player_pose.data = RTC.Pose2D(RTC.Point2D(0.0, 0.0), 0.0)
+        self._d_enemy_pose.data = RTC.Pose2D(RTC.Point2D(0.0, 0.0), 0.0)
+
+        print "start"
 
         return RTC.RTC_OK
 
@@ -253,6 +271,9 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
         #
         #
     def onDeactivated(self, ec_id):
+        self._d_winlabel.data = 0
+        self.hit_count = 0
+        self.damage_count = 0
 
         return RTC.RTC_OK
 
@@ -299,6 +320,8 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
             theta = rad * 180 / np.pi
             return theta
 
+        print "player pose:      ", player_pose
+        print "enemy pose:       ", enemy_pose
         vec_heading = np.array(
             [np.cos(player_pose.heading), np.sin(player_pose.heading)])
         vec_player_enemy = np.array(
@@ -322,55 +345,62 @@ class MobileRobotShootingGame(OpenRTM_aist.DataFlowComponentBase):
         # if self.hit_count <= self._hitpoint[0]:
         #     self._d_game_state.data = ["win or loose",
         #                                "event", "player action", "enemy action"]
+        self._d_player_shoot.data = 0
+        self._d_enemy_shoot.data = 0
+
         if self._player_poseIn.isNew():
             self._d_player_pose = self._player_poseIn.read()
-            # print self._d_player_pose.data
+            # print "player pose: ", self._d_player_pose.data
 
         if self._enemy_poseIn.isNew():
             self._d_enemy_pose = self._enemy_poseIn.read()
-            # print self._d_enemy_pose.data
+            # print "enemy pose: ", self._d_enemy_pose.data
 
         if self._joystick_buttonIn.isNew():
             self._d_joystick_button = self._joystick_buttonIn.read()
             # print self._d_joystick_button.data
             if self._d_joystick_button.data[0] == 1:
-                print "player shoots"
-                self._d_game_state.data[2] = "player shoots"
+                print "player shoots-------------------------------------------"
+                self._d_player_shoot.data = 1
 
                 if self.enemyInRange(self._d_player_pose.data, self._d_enemy_pose.data,
                                      self._hit_thresh_distance[0], self._hit_thresh_angle[0]):
 
-                    self.hit_count = self.hit_count + 1
+                    self.hit_count += 1
                     print self.hit_count, " hit on enemy"
-                    self._d_game_state.data[4] = "hit"
+                    self._d_enemy_damage.data = self.hit_count
 
                     if self.hit_count >= self._hitpoint[0]:
                         print "player win"
-                        self._d_game_state.data[0] = "win"
-                        self._d_game_state.data.append("player win")
+                        self._d_winlabel.data = 1
 
         if self._enemy_buttonIn.isNew():
             self._d_enemy_button = self._enemy_buttonIn.read()
             # print self._d_enemy_button.data
             if self._d_enemy_button.data[0] == 1:
-                print "enemy shoots"
-                self._d_game_state.data[3] = "enemy shoots"
+                print "enemy shoots--------------------------------------------"
+                self._d_enemy_shoot.data = 1
 
                 if self.enemyInRange(self._d_enemy_pose.data, self._d_player_pose.data,
                                      self._hit_thresh_distance[0], self._hit_thresh_angle[0]):
 
-                    self.damage_count = self.damage_count + 1
+                    self.damage_count += 1
                     print self.damage_count, "hit on player"
-                    self._d_game_state.data[2] = "hit"
+                    self._d_player_damage.data = self.damage_count
 
                     if self.damage_count >= self._hitpoint[0]:
                         print "player loose"
-                        self._d_game_state.data[0] = "loose"
-                        self._d_game_state.data.append("player loose")
+                        self._d_winlabel.data = -1
 
         # print self.hit_count
         # print self._d_game_state.data
-        self._game_stateOut.write()
+
+        self._winlabelOut.write()
+        self._player_shootOut.write()
+        self._player_damageOut.write()
+        self._enemy_shootOut.write()
+        self._enemy_damageOut.write()
+
         return RTC.RTC_OK
 
     #    ##
